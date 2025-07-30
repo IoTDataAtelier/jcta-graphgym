@@ -115,11 +115,12 @@ class EllipticBitcoinDataset(InMemoryDataset):
         # Timestamp based split:
         # train_mask: 1 - 34 time_step, test_mask: 35-49 time_step
         time_step = torch.from_numpy(feat_df['time_step'].values)
-        train_mask = (time_step < 35) & (y != 2)
-        test_mask = (time_step >= 35) & (y != 2)
+        train_mask = (time_step < 40) & (y != 2)
+        val_mask = (time_step>= 40) & (time_step < 44) & (y != 2)
+        test_mask = (time_step >= 44) & (y != 2)
 
         data = Data(x=x, edge_index=edge_index, y=y, train_mask=train_mask,
-                    test_mask=test_mask)
+                    test_mask=test_mask, val_mask=val_mask)
 
         if self.pre_transform is not None:
             data = self.pre_transform(data)
