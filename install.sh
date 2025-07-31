@@ -55,6 +55,12 @@ fi
 echo "📦 Installing other dependencies..."
 pip install -r requirements.txt
 
+# Install PyTorch Lightning and related packages with compatible versions
+echo "📦 Installing PyTorch Lightning and related packages..."
+pip install pytorch-lightning>=2.0.0,<3.0.0
+pip install torchmetrics>=1.0.0,<2.0.0
+pip install torchvision>=0.15.0
+
 # Install optional PyTorch Geometric extensions
 read -p "🤔 Do you want to install optional PyTorch Geometric extensions? (y/n): " install_extensions
 if [[ $install_extensions == "y" || $install_extensions == "Y" ]]; then

@@ -4,6 +4,11 @@ torch>=2.0.0
 # Note: torch-geometric is installed locally from ./pytorch_geometric directory
 # Run: pip install -e ./pytorch_geometric to install the local version
 
+# PyTorch Lightning and related packages (compatible versions)
+pytorch-lightning>=2.0.0,<3.0.0
+torchmetrics>=1.0.0,<2.0.0
+torchvision>=0.15.0
+
 # Optional but recommended PyTorch Geometric extensions
 # Uncomment the lines below based on your PyTorch version and CUDA version
 # For PyTorch 2.7.0 with CPU:
