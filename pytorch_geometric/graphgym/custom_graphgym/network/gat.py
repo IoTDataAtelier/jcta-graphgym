@@ -21,7 +21,7 @@ class GAT(torch.nn.Module):
         super().__init__()
         
         if hidden_dim is None:
-            hidden_dim = dim_in
+            hidden_dim = 64  # Use fixed hidden dimension like other models
             
         self.num_layers = num_layers
         self.dropout = dropout
@@ -29,36 +29,30 @@ class GAT(torch.nn.Module):
         self.concat = concat
         self.negative_slope = negative_slope
         
-        # Calculate output dimensions for each layer
-        if concat:
-            layer_out_dim = hidden_dim // heads
-        else:
-            layer_out_dim = hidden_dim
-            
         # GAT layers
         self.convs = nn.ModuleList()
         
         # First layer: input dimension to hidden dimension
-        self.convs.append(GATConv(dim_in, layer_out_dim, heads=heads, 
-                                 dropout=dropout, concat=concat, 
+        self.convs.append(GATConv(dim_in, hidden_dim, heads=heads, 
+                                 dropout=dropout, concat=False, 
                                  negative_slope=negative_slope))
         
         # Hidden layers
         for _ in range(num_layers - 2):
-            self.convs.append(GATConv(hidden_dim, layer_out_dim, heads=heads,
-                                     dropout=dropout, concat=concat,
+            self.convs.append(GATConv(hidden_dim, hidden_dim, heads=heads,
+                                     dropout=dropout, concat=False,
                                      negative_slope=negative_slope))
             
         # Output layer (if more than 1 layer)
         if num_layers > 1:
             # Final layer: single attention head for output
-            self.convs.append(GATConv(hidden_dim, layer_out_dim, heads=1,
+            self.convs.append(GATConv(hidden_dim, hidden_dim, heads=1,
                                      dropout=dropout, concat=False,
                                      negative_slope=negative_slope))
         
         # Task-specific head
         GNNHead = register.head_dict[cfg.dataset.task]
-        self.post_mp = GNNHead(dim_in=layer_out_dim, dim_out=dim_out)
+        self.post_mp = GNNHead(dim_in=hidden_dim, dim_out=dim_out)
 
     def forward(self, batch):
         x, edge_index = batch.x, batch.edge_index

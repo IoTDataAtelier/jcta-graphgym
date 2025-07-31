@@ -1,59 +1,47 @@
-# GAT Node Classification Configuration
-# Based on: Veličković, P., Casanova, A., Liò, P., Cucurull, G., Romero, A., & Bengio, Y. (2018). Graph attention networks.
+# GAT Node Classification Configuration with Elliptic Dataset
+# Based on: Veličković, P., et al. (2018). Graph attention networks.
 
 out_dir: results
-cfg: gat
-cfg_file: configs/pyg/gat_node.yaml
-repeat: 1
-mark_done: false
-opts: []
 
 # Dataset
 dataset:
   format: PyG
-  name: Cora  # Can be: Cora, CiteSeer, PubMed, Reddit, Yelp, Elliptic
+  name: Elliptic
   task: node
-  task_type: classification
-  transductive: true
-  split: [0.8, 0.1, 0.1]
+  task_type: classification_binary
+  transductive: false
+  transform: none
+
+# Training
+train:
+  batch_size: 10
+  eval_period: 20
+  ckpt_period: 100
 
 # Model
 model:
   type: gat
   loss_fun: cross_entropy
+  edge_decoding: dot
+  graph_pooling: add
 
 # GNN Architecture
 gnn:
+  layers_pre_mp: 1
+  layers_mp: 2
+  layers_post_mp: 1
+  dim_inner: 64
   layer_type: gat
-  num_layers: 2
-  hidden_dim: 64
-  dropout: 0.6
-  heads: 8
-  concat: true
-  negative_slope: 0.2
+  stage_type: stack
+  batchnorm: true
+  act: prelu
+  dropout: 0.5
   agg: add
-  bias: true
-  l2norm: false
-
-# Training
-train:
-  auto_resume: true
-  epoch_resume: 0
-  ckpt_iter: -1
-  ckpt_clean: true
+  normalize_adj: false
 
 # Optimization
 optim:
   optimizer: adam
-  base_lr: 0.005
+  base_lr: 0.01
   max_epoch: 200
-  weight_decay: 5e-4
-  scheduler: reduce_on_plateau
-  patience: 10
-  lr_decay: 0.5
-
-# System
-device: cuda
-seed: 42
-mem:
-  inplace: false 
+  weight_decay: 5e-4 

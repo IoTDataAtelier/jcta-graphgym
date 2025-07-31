@@ -22,19 +22,117 @@ This project extends GraphGym with three popular Graph Neural Network models:
 
 ### Running Experiments
 
+The project includes three custom GNN models for node classification:
+
+- **GCN** (Graph Convolutional Network) - Kipf & Welling (2017)
+- **GraphSAGE** (Graph SAmple and aggreGatE) - Hamilton et al. (2017)
+- **GAT** (Graph Attention Network) - Veličković et al. (2018)
+
+#### Quick Experiment
+
+To run a GraphSAGE experiment with the Elliptic dataset:
+
+```bash
+cd pytorch_geometric/graphgym
+python main.py --cfg configs/pyg/graphsage_node.yaml
+```
+
+#### Available Configurations
+
+| Model | Configuration File | Description |
+|-------|-------------------|-------------|
+| **GCN** | `configs/pyg/gcn_node.yaml` | Graph Convolutional Network |
+| **GraphSAGE** | `configs/pyg/graphsage_node.yaml` | GraphSAGE (Inductive Learning) |
+| **GAT** | `configs/pyg/gat_node.yaml` | Graph Attention Network |
+
+#### Running All Models
+
 ```bash
 # Navigate to GraphGym directory
 cd pytorch_geometric/graphgym
 
-# Run GCN on Cora
+# Run all three models
 python main.py --cfg configs/pyg/gcn_node.yaml
-
-# Run GraphSAGE on Reddit
 python main.py --cfg configs/pyg/graphsage_node.yaml
-
-# Run GAT on Cora
 python main.py --cfg configs/pyg/gat_node.yaml
 ```
+
+#### Customizing Experiments
+
+**Change Dataset**: Edit the configuration file and modify:
+```yaml
+dataset:
+  name: Elliptic  # Options: Elliptic, Reddit, Yelp, Cora, CiteSeer, PubMed
+```
+
+**Adjust Model Parameters**: Modify the GNN section:
+```yaml
+gnn:
+  dim_inner: 64         # Hidden dimension
+  layers_mp: 2          # Number of layers
+  dropout: 0.5          # Dropout rate
+```
+
+**Training Settings**: Adjust optimization parameters:
+```yaml
+optim:
+  base_lr: 0.01         # Learning rate
+  max_epoch: 200        # Training epochs
+  weight_decay: 5e-4    # Weight decay
+```
+
+#### Results and Analysis
+
+Results are saved in `pytorch_geometric/graphgym/results/` with the following structure:
+
+```
+results/
+├── gcn_node/           # GCN experiment results
+├── graphsage_node/     # GraphSAGE experiment results
+└── gat_node/          # GAT experiment results
+    ├── 0/             # Individual run results
+    ├── agg/           # Aggregated results
+    │   ├── train/     # Training metrics
+    │   └── val/       # Validation metrics
+    ├── config.yaml    # Configuration used
+    └── lightning_logs/ # PyTorch Lightning logs
+```
+
+**Key Result Files**:
+- `agg/train/best.json`: Best training metrics
+- `agg/val/best.json`: Best validation metrics
+- `config.yaml`: Configuration used for the experiment
+
+#### Experimental Results
+
+On the Elliptic dataset (Bitcoin transaction fraud detection):
+
+| Model | Validation Accuracy | Precision | Recall | F1-Score | AUC | Status |
+|-------|-------------------|-----------|--------|----------|-----|--------|
+| **GraphSAGE** | **97.00%** | **96.74%** | **66.40%** | **78.74%** | **93.16%** | ✅ Working |
+| **GCN** | 94.38% | 90.86% | 36.46% | 52.03% | 86.94% | ✅ Working |
+| **GAT** | - | - | - | - | - | ❌ Memory Error |
+
+**Key Findings:**
+- **GraphSAGE** achieved the best overall performance with balanced precision and recall
+- **GCN** showed good accuracy but lower recall for illicit transaction detection
+- **GAT** encountered memory issues and needs optimization for this dataset size
+
+*For detailed results, see [EXPERIMENT_RESULTS.md](EXPERIMENT_RESULTS.md)*
+
+#### Troubleshooting
+
+**Common Issues**:
+1. **Import Errors**: Ensure virtual environment is activated
+2. **CUDA Issues**: Models automatically use CPU if CUDA unavailable
+3. **Memory Issues**: Reduce `batch_size` or `dim_inner`
+4. **Configuration Errors**: Check YAML syntax and parameter names
+
+**Performance Tips**:
+1. **GPU Usage**: Models automatically use CUDA if available
+2. **Batch Size**: Adjust based on GPU memory
+3. **Learning Rate**: Start with 0.01 and adjust based on convergence
+4. **Early Stopping**: Monitor validation metrics to prevent overfitting
 
 ### Supported Datasets
 
@@ -42,21 +140,6 @@ All models support the following datasets:
 - **Citation Networks**: Cora, CiteSeer, PubMed
 - **Social Networks**: Reddit, Yelp
 - **Financial Networks**: Elliptic
-
-### Configuration Files
-
-Each model has its own configuration file:
-- `configs/pyg/gcn_node.yaml` - GCN configuration
-- `configs/pyg/graphsage_node.yaml` - GraphSAGE configuration  
-- `configs/pyg/gat_node.yaml` - GAT configuration
-
-### Customization
-
-To modify model parameters, edit the corresponding YAML configuration file or use command-line options:
-
-```bash
-python main.py --cfg configs/pyg/gcn_node.yaml opts gnn.hidden_dim 128 gnn.num_layers 3
-```
 
 ## 📁 Project Structure
 
