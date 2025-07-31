@@ -96,20 +96,43 @@ results/
 ### Prerequisites
 - Python 3.9+
 - PyTorch 2.0+
-- PyTorch Geometric
 
 ### Setup
+
+#### Option 1: Automated Installation (Recommended)
 ```bash
 # Clone the repository
 git clone https://github.com/IoTDataAtelier/jcta-graphgym.git
 cd jcta-graphgym
 
-# Install PyTorch Geometric
-pip install torch_geometric
+# Run the installation script
+./install.sh
+```
 
-# Install additional dependencies (optional)
+#### Option 2: Manual Installation
+```bash
+# Clone the repository
+git clone https://github.com/IoTDataAtelier/jcta-graphgym.git
+cd jcta-graphgym
+
+# Install PyTorch
+pip install torch>=2.0.0
+
+# Install local torch_geometric (this project uses a local version)
+pip install -e ./pytorch_geometric
+
+# Install other dependencies
+pip install -r requirements.txt
+
+# Optional: Install PyTorch Geometric extensions for better performance
 pip install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.7.0+cpu.html
 ```
+
+### Local torch_geometric Usage
+This project uses a local version of PyTorch Geometric located in the `./pytorch_geometric` directory. This allows you to:
+- Use the exact version that was tested with the custom models
+- Make modifications to PyTorch Geometric if needed
+- Ensure compatibility with the custom GraphGym implementations
 
 ## 📚 Documentation
 
